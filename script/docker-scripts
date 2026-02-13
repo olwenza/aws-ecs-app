@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Connecto ec2 instance
+ssh -i ~/.ssh/aws-ec2-key.pem ec2-user@3.237.103.246
+
+# Install docker manauall using the following command if not already installed
+sudo yum update -y
+sudo amazon-linux-extras install docker -y
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -aG docker ec2-user
+
+# Create a project folder (e.g web-app)
+mkdir web-app
+
+# Create your Dockerfile and index.html file inside the web-app dir
+cd web-app
+
+# Copy and paste the file from ./webapp
+
+# Run the docker file form the web-app dir using following command
+docker build -t web-app-image . 
+
+#Lunch a container from the image
+docker run -d -p 80:80 web-app-container-1  web-app-image
+
+

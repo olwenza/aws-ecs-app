@@ -43,6 +43,8 @@ resource "aws_instance" "this" {
   vpc_security_group_ids      = [aws_security_group.ec2_sg[each.key].id]
   associate_public_ip_address = true
   key_name                    = var.key_name
+  user_data                   = file("${path.module}/user_data.sh")
+  user_data_replace_on_change = true # Allows us to update user_data
 
   tags = {
     Name = each.key
