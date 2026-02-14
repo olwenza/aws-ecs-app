@@ -23,7 +23,7 @@ module "ec2" {
   source = "./modules/ec2"
 
   vpc_id        = var.vpc_id
-  ami_id        = "ami-0c02fb55956c7d316" # Amazon Linux 2 (us-east-1)
+  ami_id        = "ami-0c02fb55956c7d316"   # Amazon Linux 2 (us-east-1)
   instance_type = "t2.micro"
   key_name      = var.key_name
 
@@ -35,4 +35,9 @@ module "ec2" {
       subnet_id = module.subnet.public_subnet_2_id
     }
   }
+}
+
+module "ecr" {
+  source          = "./modules/ecr"
+  repository_name = "web-app-repo"
 }
