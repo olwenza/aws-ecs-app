@@ -75,3 +75,5 @@ docker pull 697227439720.dkr.ecr.us-east-1.amazonaws.com/web-app-repo:latest
 docker run -d -p 80:80 \
 697227439720.dkr.ecr.us-east-1.amazonaws.com/web-app-repo:latest
 
+# open brower and enter ec2 public ip to view site
+
