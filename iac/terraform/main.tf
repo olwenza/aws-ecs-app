@@ -36,3 +36,8 @@ module "ec2" {
     }
   }
 }
+
+module "ecr" {
+  source          = "./modules/ecr"
+  repository_name = "web-app-repo"
+}
