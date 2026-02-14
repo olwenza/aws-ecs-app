@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Connecto ec2 instance
+# Connect to ec2 instance
 ssh -i ~/.ssh/aws-ec2-key.pem ec2-user@3.237.103.246
 
-# Install docker manauall using the following command if not already installed
+# Install docker manauall using the following command, if not already installed
 sudo yum update -y
 sudo amazon-linux-extras install docker -y
 sudo systemctl enable docker
@@ -21,7 +21,57 @@ cd web-app
 # Run the docker file form the web-app dir using following command
 docker build -t web-app-image . 
 
-#Lunch a container from the image
-docker run -d -p 80:80 web-app-container-1  web-app-image
+# Verify build image
+docker images
 
+#Lunch a container from the image
+docker run -d -p 80:80 --name web-app-container-1  web-app-image
+
+# Verify the container is running
+docker ps
+
+# We now add the created image to ECR
+## In your local machine, authenticate Docker to ECR
+- aws ecr get-login-password --region us-east-1 \
+| docker login --username AWS --password-stdin 697227439720.dkr.ecr.us-east-1.amazonaws.com
+## If successful you’ll see:
+- Login Succeeded
+
+# Create a local docker image of the web-app
+docker build -t web-app-image .
+
+# Tag the image with the ecr repo tag name
+docker tag web-app-image:latest \
+697227439720.dkr.ecr.us-east-1.amazonaws.com/web-app-repo:latest
+
+# Verify the tag worked
+docker images
+
+# You should now see 2 entries for the image
+web-app-image                                  latest
+697227439720.dkr.ecr.us-east-1.amazonaws.com/web-app-repo   latest
+
+
+# Push the locally created docker image to ecr
+docker push 697227439720.dkr.ecr.us-east-1.amazonaws.com/web-app-repo:latest
+
+# Confirm push
+aws ecr list-images --repository-name web-app-repo
+
+# Login on ec2
+ssh -i ~/.ssh/aws-ec2-key.pem ec2-user@107.23.28.120
+
+# Temporarily login to ecr
+aws ecr get-login-password --region us-east-1 \
+| docker login --username AWS --password-stdin 697227439720.dkr.ecr.us-east-1.amazonaws.com
+
+# Attach an IAM Role to the EC2 instance. terraform
+# code added to ./module/ec2/main.tf
+
+# Pull the image from ec2 
+docker pull 697227439720.dkr.ecr.us-east-1.amazonaws.com/web-app-repo:latest
+
+# Run the image in ec2
+docker run -d -p 80:80 \
+697227439720.dkr.ecr.us-east-1.amazonaws.com/web-app-repo:latest
 
